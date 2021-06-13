@@ -75,6 +75,22 @@ Table CASE{
 
 Ref: CASE.patient > PA.id
 
+Table VITAL_TYPE as VLT{
+  id int [pk]
+  name varchar
+}
+// Will be filled by fixtures
+
+Table VITAL as VT{
+  id int [pk]
+  case int
+  vital_type int
+  reading varchar
+}
+
+Ref: VT.case > CASE.id
+Ref: VT.vital_type - VLT.id
+
 Table LAB_TYPE as LT{
   id int [pk, increment]
   name varchar
