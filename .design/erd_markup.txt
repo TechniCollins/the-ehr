@@ -1,0 +1,145 @@
+Table COUNTRY as C{
+  id int [pk, increment]
+  code varchar
+  name varchar
+}
+
+Table STATE as S{
+  id int [pk, increment]
+  country int
+  code varchar
+}
+
+Ref: S.country > C.id
+
+Table GENDER as G{
+  id int [pk, increment]
+  name varchar // fill this using fixtures
+}
+
+Table USER as U{
+  id uuid [pk]
+  email_address varchar
+  phone_number varchar
+  first_name varchar
+  second_name varchar
+  surname varchar
+  gender int
+  created_at timestamp
+  country int
+  state int
+}
+
+Ref: U.country - C.id
+Ref: U.state - S.id
+Ref: U.gender - G.id
+
+Table PRACTICE as PRA{
+  id int [pk, increment]
+  name varchar
+  country int
+  state int
+  owned_by uuid
+}
+
+Ref: PRA.owned_by - U.id
+Ref: PRA.country - C.id
+Ref: PRA.state - S.id
+
+Table PROVIDER as PR{
+  user uuid
+  NPI int [pk]
+  practice int
+ }
+
+Ref: PR.user - U.id // one-to-one relaionship
+Ref: PR.practice > PRA.id // one-to-many relationship
+ 
+Table PATIENT as PA{
+  id int [pk]
+  user uuid
+}
+
+Ref: PA.user - U.id
+
+Table CASE{
+  id int [pk]
+  patient id
+  intake varchar
+  subjective varchar
+  objective varchar
+  diagnosis varchar
+  plan varchar
+  created_at timestamp
+}
+
+Ref: CASE.patient > PA.id
+
+Table LAB_TYPE as LT{
+  id int [pk, increment]
+  name varchar
+  created_at timestamp
+  created_by timestamp
+  is_private boolean // False only for default values
+}
+// fixtures will assign default lab types
+// providers can define their own lab types
+
+Table LAB as L{
+  id int [pk, increment]
+  case int
+  lab_type int  //blood-test, X-RAY etc
+  remarks varchar
+  conducted_by varchar
+  created_at timestamp
+}
+
+Ref: L.case > CASE.id
+Ref: L.lab_type - LT.id
+
+Table ATTACHMENT as A{
+  id int [pk]
+  lab int
+  file varchar // link to a file on a CDN
+  created_at timestamp
+}
+
+Ref: A.lab > L.id
+
+Table MEDICATION_TYPE as MT{
+  id int [pk, increment]
+  name varchar
+  created_at timestamp
+  created_by int // provider
+  is_private boolean  // False only for default values
+}
+// fixtures will assign default medication types
+// providers can define their own medication types
+
+Ref: MT.created_by > PR.NPI
+
+Table MEDICATION as M{
+  id int [pk, increment]
+  case int
+  remarks varchar
+  medication_type int
+  dosage varchar
+  created_at timestamp
+}
+
+Ref: M.medication_type - MT.id
+
+Ref: M.case > CASE.id
+
+Table VISIT as V{
+  id int [pk, increment]
+  case int
+  agenda varchar // the reason for visiting
+  provider uuid
+  check_in timestamp
+  check_out timestamp
+  created_at timestamp
+}
+
+Ref: V.case > CASE.id
+Ref: V.provider - PR.NPI
