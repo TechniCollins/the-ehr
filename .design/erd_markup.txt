@@ -12,39 +12,52 @@ Table STATE as S{
 
 Ref: S.country > C.id
 
-Table GENDER as G{
+Table SEX{
   id int [pk, increment]
   name varchar // fill this using fixtures
 }
 
 Table USER as U{
   id uuid [pk]
-  email_address varchar
-  phone_number varchar
+  username varchar
   first_name varchar
   second_name varchar
   surname varchar
-  gender int
   created_at timestamp
-  country int
-  state int
 }
 
-Ref: U.country - C.id
-Ref: U.state - S.id
-Ref: U.gender - G.id
+Table PERSONAL_INFO as PI {
+  id int [pk, increment]
+  user uuid
+  sex int
+  birth_date datetime
+}
+
+Ref: PI.user - U.id
+Ref: PI.sex > SEX.id
+
+Table CONTACT as CO{
+  id int [pk, increment]
+  user uuid
+  email_address varchar
+  phone_number varchar
+  state int
+  address_line_1 varchar
+  address_line_2 varchar
+}
+
+Ref: CO.user - U.id
+Ref: CO.state > S.id
 
 Table PRACTICE as PRA{
   id int [pk, increment]
   name varchar
-  country int
   state int
   owned_by uuid
 }
 
 Ref: PRA.owned_by - U.id
-Ref: PRA.country - C.id
-Ref: PRA.state - S.id
+Ref: PRA.state > S.id
 
 Table PROVIDER as PR{
   user uuid
@@ -61,6 +74,22 @@ Table PATIENT as PA{
 }
 
 Ref: PA.user - U.id
+
+Table RELATIONSHIP as R{
+  id int [pk, increment]
+  name varchar // Parent, Sibling, Friend, Other
+}
+
+Table EMERGENCY_CONTACT as EC {
+  id int [pk, increment]
+  patient int
+  name varchar // full name
+  relationship int
+  phone_number varchar
+}
+
+Ref: EC.patient > PA.id
+Ref: EC.relationship > R.id
 
 Table CASE{
   id int [pk]
@@ -89,7 +118,7 @@ Table VITAL as VT{
 }
 
 Ref: VT.case > CASE.id
-Ref: VT.vital_type - VLT.id
+Ref: VT.vital_type > VLT.id
 
 Table LAB_TYPE as LT{
   id int [pk, increment]
@@ -111,7 +140,7 @@ Table LAB as L{
 }
 
 Ref: L.case > CASE.id
-Ref: L.lab_type - LT.id
+Ref: L.lab_type > LT.id
 
 Table ATTACHMENT as A{
   id int [pk]
@@ -143,7 +172,7 @@ Table MEDICATION as M{
   created_at timestamp
 }
 
-Ref: M.medication_type - MT.id
+Ref: M.medication_type > MT.id
 
 Ref: M.case > CASE.id
 
@@ -158,4 +187,4 @@ Table VISIT as V{
 }
 
 Ref: V.case > CASE.id
-Ref: V.provider - PR.NPI
+Ref: V.provider > PR.NPI
