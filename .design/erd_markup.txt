@@ -12,6 +12,12 @@ Table STATE as S{
 
 Ref: S.country > C.id
 
+Table MARITAL_STATUS as MS{
+  id int [pk, increment]
+  name varchar
+}
+// filled by fixtures
+
 Table SEX{
   id int [pk, increment]
   name varchar // fill this using fixtures
@@ -26,15 +32,28 @@ Table USER as U{
   created_at timestamp
 }
 
+Table ETHNICITY as E{
+  id int [pk, increment]
+  name varchar
+}
+// applied from fixtures
+// Also include None of the above
+
 Table PERSONAL_INFO as PI {
   id int [pk, increment]
   user uuid
   sex int
   birth_date datetime
+  ssn varchar // social security number (9 digits), unique, nullable
+  marital_status int
+  ethnicity int 
 }
+
+Ref: PI.marital_status > MS.id
 
 Ref: PI.user - U.id
 Ref: PI.sex > SEX.id
+Ref: PI.ethnicity > E.id
 
 Table CONTACT as CO{
   id int [pk, increment]
@@ -42,8 +61,9 @@ Table CONTACT as CO{
   email_address varchar
   phone_number varchar
   state int
-  address_line_1 varchar
-  address_line_2 varchar
+  address_line_1 varchar // building #, street name
+  address_line_2 varchar // floor, room, suite or apartment #
+  address_line_3 varchar // City/town
 }
 
 Ref: CO.user - U.id
@@ -56,14 +76,15 @@ Table PRACTICE as PRA{
   owned_by uuid
 }
 
-Ref: PRA.owned_by - U.id
+Ref: PRA.owned_by > U.id
 Ref: PRA.state > S.id
 
 Table PROVIDER as PR{
   user uuid
-  NPI int [pk]
+  NPI int [pk] // 10 digits
   practice int
- }
+}
+// NPI and practice are unique together
 
 Ref: PR.user - U.id // one-to-one relaionship
 Ref: PR.practice > PRA.id // one-to-many relationship
@@ -71,7 +92,11 @@ Ref: PR.practice > PRA.id // one-to-many relationship
 Table PATIENT as PA{
   id int [pk]
   user uuid
+  practice int
 }
+// user and practice are unique together
+
+Ref: PA.practice > PRA.id
 
 Ref: PA.user - U.id
 
@@ -91,55 +116,92 @@ Table EMERGENCY_CONTACT as EC {
 Ref: EC.patient > PA.id
 Ref: EC.relationship > R.id
 
+Table INSURANCE_TYPE as IT {
+  id int [pk, increment]
+  name varchar
+}
+// Will be added from fixtures
+
+Table INSURANCE as I{
+  id int [pk, increment]
+  patient int
+  name varchar
+  type int
+  address varchar
+  policy_holder varchar // name of patient, spouse or numbers
+}
+
+Ref: I.patient > PA.id
+Ref: I.type > IT.id
+
 Table CASE{
-  id int [pk]
+  id int [pk, increment]
   patient id
-  intake varchar
+  chief_complaint varchar
+  hpi varchar  // History of present illness
   subjective varchar
   objective varchar
+  // intake varchar
   diagnosis varchar
-  plan varchar
   created_at timestamp
 }
 
 Ref: CASE.patient > PA.id
 
+Table VITAL_POSITIONS as VP{
+  id int [pk, increment]
+  name varchar // lying, sitting, standing
+  created_by int
+  is_private boolean
+}
+
+Ref: VP.created_by > PR.NPI
+
+// Added from fixtures but providers
+// can define their own positions
+
 Table VITAL_TYPE as VLT{
-  id int [pk]
+  id int [pk, increment]
   name varchar
 }
 // Will be filled by fixtures
 
 Table VITAL as VT{
   id int [pk]
-  case int
+  encounter int
   vital_type int
+  position int
   reading varchar
 }
+// encounter, vital_type and vital_position
+// are unique together
 
-Ref: VT.case > CASE.id
+Ref: VT.encounter > EN.id
 Ref: VT.vital_type > VLT.id
+Ref: VT.position > VP.id
 
 Table LAB_TYPE as LT{
   id int [pk, increment]
   name varchar
   created_at timestamp
-  created_by timestamp
+  created_by int
   is_private boolean // False only for default values
 }
 // fixtures will assign default lab types
 // providers can define their own lab types
 
-Table LAB as L{
+Ref: LT.created_by > PR.NPI
+
+Table TEST as L{
   id int [pk, increment]
-  case int
+  encounter int
   lab_type int  //blood-test, X-RAY etc
   remarks varchar
   conducted_by varchar
   created_at timestamp
 }
 
-Ref: L.case > CASE.id
+Ref: L.encounter > EN.id
 Ref: L.lab_type > LT.id
 
 Table ATTACHMENT as A{
@@ -155,36 +217,71 @@ Table MEDICATION_TYPE as MT{
   id int [pk, increment]
   name varchar
   created_at timestamp
-  created_by int // provider
   is_private boolean  // False only for default values
 }
-// fixtures will assign default medication types
-// providers can define their own medication types
 
-Ref: MT.created_by > PR.NPI
+Table MEDICATION_STATUS as MES {
+  id int [pk, increment]
+  name varchar // ongoing, completed
+}
+// fixtures to assign defaults
+
+Table ALLERGY as AG {
+  id int [pk, increment]
+  patient int
+  name varchar // allergy KB
+  added_by int // nullable
+}
+
+Ref: AG.patient > PA.id
+Ref: AG.added_by > PR.NPI
 
 Table MEDICATION as M{
   id int [pk, increment]
-  case int
+  patient int
+  name varhcar // medication KB
   remarks varchar
   medication_type int
   dosage varchar
+  status int
+  prescribed_by int // nullable
+  prescription_date datetime //nullable
+  end_date datetime // nullable
   created_at timestamp
 }
 
 Ref: M.medication_type > MT.id
+Ref: M.patient > PA.id
+Ref: M.status > MES.id
+Ref: M.prescribed_by > PR.NPI
 
-Ref: M.case > CASE.id
+Table ENCOUNTER_REASONS as ER{
+  id int [pk, increment]
+  name varchar // follow up, vitals check
+  created_by int
+  is_private boolean // False only for defaults
+}
 
-Table VISIT as V{
+Ref: ER.created_by > PR.NPI
+
+Table ENCOUNTER as EN{
   id int [pk, increment]
   case int
-  agenda varchar // the reason for visiting
   provider uuid
+  encounter_reason varchar
+  ros varchar // Review of systems
+  hpi_update varchar // nullable
+  subjective_update varchar
+  objective_update varchar
+  // hpi, subjective, objective and ROS can be applied from previous encounters
+  // if no update is available, display from case
+  plan varchar
   check_in timestamp
   check_out timestamp
   created_at timestamp
+  closed boolean
 }
 
-Ref: V.case > CASE.id
-Ref: V.provider > PR.NPI
+Ref: EN.encounter_reason > ER.id
+Ref: EN.case > CASE.id
+Ref: EN.provider > PR.NPI
