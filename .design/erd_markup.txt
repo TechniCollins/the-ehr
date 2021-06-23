@@ -138,11 +138,6 @@ Table CASE{
   id int [pk, increment]
   patient id
   chief_complaint varchar
-  hpi varchar  // History of present illness
-  subjective varchar
-  objective varchar
-  // intake varchar
-  diagnosis varchar
   created_at timestamp
 }
 
@@ -269,12 +264,14 @@ Table ENCOUNTER as EN{
   case int
   provider uuid
   encounter_reason varchar
+  chief_complaint_update varchar
+  hpi varchar // nullable
   ros varchar // Review of systems
-  hpi_update varchar // nullable
-  subjective_update varchar
-  objective_update varchar
-  // hpi, subjective, objective and ROS can be applied from previous encounters
-  // if no update is available, display from case
+  objective varchar
+  // cc, hpi, objective and ROS can be applied from previous encounters
+  assesment varchar
+  diagnosis varchar
+  icd_codes varchar // space-separated ICD codes
   plan varchar
   check_in timestamp
   check_out timestamp
