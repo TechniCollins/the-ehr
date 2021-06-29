@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot-etc:/etc/letsencrypt
+    ports:
+      - 80:80
+    command: certonly --standalone --email technicollins.business@gmail.com --agree-tos --no-eff-email -d afyaehr.com --non-interactive --keep-until-expiring
+
+  web:
+    build: .
+    env_file:
+      - .env
+    command: gunicorn afya_ehr.wsgi:application --bind 0.0.0.0:8000 -t 1200 -w 3
+    ports:
+      - "8000:8000"
+    volumes:
+      - static:/application/staticfiles
+
+  nginx:
+    image: nginx:1.19.6-alpine
+    ports:
+      - 80:80
+      - 443:443
+    restart: "unless-stopped"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - static:/application/staticfiles/:ro
+    depends_on:
+      certbot:
+        condition: service_completed_successfully
+      web:
+        condition: service_started
+
+volumes:
+  static:
+    driver: local
