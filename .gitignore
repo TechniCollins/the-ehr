@@ -133,4 +133,3 @@ dmypy.json
 
 # custom ignores
 afya_ehr_env/
-certbot-etc/

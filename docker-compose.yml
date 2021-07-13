@@ -27,6 +27,9 @@ services:
     restart: "unless-stopped"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./certbot-etc/live/afyaehr.com/fullchain.pem:/etc/nginx/ssl/afyaehr.com/fullchain.pem:ro
+      - ./certbot-etc/live/afyaehr.com/privkey.pem:/etc/nginx/ssl/afyaehr.com/privkey.pem:ro
+      - ./dhparams.pem:/etc/nginx/dhparams.pem:ro
       - static:/application/staticfiles/:ro
     depends_on:
       certbot:
