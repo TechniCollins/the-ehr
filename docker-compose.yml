@@ -1,14 +1,6 @@
 version: '3.9'
 
 services:
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./certbot-etc:/etc/letsencrypt
-    ports:
-      - 80:80
-    command: certonly --standalone --email technicollins.business@gmail.com --agree-tos --no-eff-email -d afyaehr.com --non-interactive --keep-until-expiring
-
   web:
     build: .
     env_file:
@@ -20,20 +12,13 @@ services:
       - static:/application/staticfiles
 
   nginx:
-    image: nginx:1.19.6-alpine
+    build: ./nginx
     ports:
       - 80:80
-      - 443:443
     restart: "unless-stopped"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./certbot-etc/live/afyaehr.com/fullchain.pem:/etc/nginx/ssl/afyaehr.com/fullchain.pem:ro
-      - ./certbot-etc/live/afyaehr.com/privkey.pem:/etc/nginx/ssl/afyaehr.com/privkey.pem:ro
-      - ./dhparams.pem:/etc/nginx/dhparams.pem:ro
-      - static:/application/staticfiles/:ro
+      - static:/application/staticfiles/
     depends_on:
-      certbot:
-        condition: service_completed_successfully
       web:
         condition: service_started
 
