@@ -57,6 +57,3 @@ RUN rm requirements.txt
 
 # Copy code into Image
 ADD ./afya_ehr/ $APP_HOME
-
-# collect static files
-RUN $APP_HOME/manage.py collectstatic

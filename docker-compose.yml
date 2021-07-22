@@ -8,20 +8,12 @@ services:
     command: gunicorn afya_ehr.wsgi:application --bind 0.0.0.0:8000 -t 1200 -w 3
     ports:
       - "8000:8000"
-    volumes:
-      - static:/application/staticfiles
 
   nginx:
-    build: ./nginx
+    image: nginx:1.19.6-alpine
     ports:
       - 80:80
     restart: "unless-stopped"
-    volumes:
-      - static:/application/staticfiles/
     depends_on:
       web:
         condition: service_started
-
-volumes:
-  static:
-    driver: local
