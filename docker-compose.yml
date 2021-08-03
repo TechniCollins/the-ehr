@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    env_file:
+      - .env
+    command: gunicorn afya_ehr.wsgi:application --bind 0.0.0.0:8000 -t 1200 -w 3
+    ports:
+      - "8000:8000"
+
+  nginx:
+    image: nginx:1.19.6-alpine
+    ports:
+      - 80:80
+    restart: "unless-stopped"
+    depends_on:
+      web:
+        condition: service_started

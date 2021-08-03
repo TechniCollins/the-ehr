@@ -132,4 +132,4 @@ dmypy.json
 .idea/
 
 # custom ignores
-.env
+afya_ehr_env/
