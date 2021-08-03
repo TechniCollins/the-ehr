@@ -1,8 +1,8 @@
 from .base import *  # noqa: F403
-import debug_toolbar
+from django.conf.urls import url
 
 local_urlpatterns = [
-    path('__debug__/', include(debug_toolbar.urls)),  # noqa: F405
+    url(r'^silk/', include('silk.urls', namespace='silk'))  # noqa: F405
 ]
 
 urlpatterns += local_urlpatterns  # noqa: F405
