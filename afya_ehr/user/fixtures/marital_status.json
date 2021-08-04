@@ -2,13 +2,13 @@
   {
     "model": "user.MaritalStatus",
     "fields": {
-      "name": "married",
+      "name": "married"
     }
   },
   {
     "model": "user.MaritalStatus",
     "fields": {
-      "name": "single",
+      "name": "single"
     }
   }
 ]

@@ -2,7 +2,7 @@
   {
     "model": "user.Ethnicity",
     "fields": {
-      "name": "Black or African American ",
+      "name": "Black or African American "
     }
   }
 ]

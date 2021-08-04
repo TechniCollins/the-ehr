@@ -2,13 +2,13 @@
   {
     "model": "user.Relationship",
     "fields": {
-      "name": "parent",
+      "name": "parent"
     }
   },
   {
-    "model": "user.sibling",
+    "model": "user.Relationship",
     "fields": {
-      "name": "single",
+      "name": "sibling"
     }
   }
 ]

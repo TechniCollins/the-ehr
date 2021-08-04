@@ -2,13 +2,13 @@
   {
     "model": "user.Sex",
     "fields": {
-      "name": "Male",
+      "name": "Male"
     }
   },
   {
     "model": "user.Sex",
     "fields": {
-      "name": "Female",
+      "name": "Female"
     }
   }
 ]
