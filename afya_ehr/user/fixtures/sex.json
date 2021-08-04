@@ -1,0 +1,14 @@
+[
+  {
+    "model": "user.Sex",
+    "fields": {
+      "name": "Male",
+    }
+  },
+  {
+    "model": "user.Sex",
+    "fields": {
+      "name": "Female",
+    }
+  }
+]

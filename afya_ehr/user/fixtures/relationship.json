@@ -1,0 +1,14 @@
+[
+  {
+    "model": "user.Relationship",
+    "fields": {
+      "name": "parent",
+    }
+  },
+  {
+    "model": "user.sibling",
+    "fields": {
+      "name": "single",
+    }
+  }
+]

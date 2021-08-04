@@ -1,0 +1,14 @@
+[
+  {
+    "model": "user.MaritalStatus",
+    "fields": {
+      "name": "married",
+    }
+  },
+  {
+    "model": "user.MaritalStatus",
+    "fields": {
+      "name": "single",
+    }
+  }
+]
