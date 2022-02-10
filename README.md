@@ -2,7 +2,7 @@
 Backend design for THE EHR software.
 
 ## ENTITY RELATIONSHIP MODEL
-![er model for afya ehr software](https://github.com/TechniCollins/the-ehr/blob/design/.design/erd.png?raw=true)
+![er model for afya ehr software](https://github.com/TechniCollins/the-ehr/blob/main/.design/erd.png)
 
 
 # SETUP
